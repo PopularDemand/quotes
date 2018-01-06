@@ -5,7 +5,7 @@ class QuotesController < ApplicationController
   def show
     quote = Quote.find_by(id: params[:id])
     if quote
-      render json: quote
+      render json: quote.to_json
     else
       render json: { error: 'No quote found' }, status: 404
     end
@@ -14,7 +14,7 @@ class QuotesController < ApplicationController
   def create
     quote = Quote.new(quote_params)
     if quote.save
-      render json: quote
+      render json: quote.to_json
     else
       render json: { error: quote.errors  }, status: :unprocessable_entity
     end
@@ -22,7 +22,8 @@ class QuotesController < ApplicationController
 
   def random
     quote = Quote.order('RANDOM()').limit(1).first
-    render json: quote
+    # byebug
+    render json: quote.to_json
   end
 
   private
