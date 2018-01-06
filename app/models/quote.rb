@@ -1,6 +1,6 @@
 class Quote < ApplicationRecord
   # Validations
-  validates :content, :attribution, presence: true
+  validates :content, :attribution, :topic, presence: true
 
   # Associations
   belongs_to :topic
@@ -9,12 +9,23 @@ class Quote < ApplicationRecord
   after_initialize :ensure_topic
 
   def initialize(args)
-    create_topic(args) if create_category(args)
+    create_category(args)
+    create_topic(args)
     super(args)
   end
 
   def category
     topic ? topic.category : nil
+  end
+
+  def to_json(opts = {})
+    {
+      id: id,
+      content: content,
+      attribution: attribution,
+      category: category.title,
+      topic: topic.title
+    }
   end
 
   private
@@ -26,13 +37,22 @@ class Quote < ApplicationRecord
     end
 
     def create_topic(args)
-      topic = Topic.find_or_create_by(title: args[:topic])
-      topic.category = args.delete(:category) { |cat| return cat }
-      args[:topic] = topic
+      if !args[:topic]
+        return args[:topic] = Topic.uncategorizedTopic
+      end
+
+      title = args[:topic].downcase
+      category = args.delete(:category) { |cat| return cat }
+      new_topic = Topic.find_or_create_by(title: title, category: category)
+      args[:topic] = new_topic
     end
 
     def create_category(args)
-      return false unless args[:category] && args[:topic]
-      args[:category] = Category.find_or_create_by(title: args[:category])
+      if !args[:category]
+        return args[:category] = Category.uncategorizedCategory
+      end
+
+      title = args[:category].downcase
+      args[:category] = Category.find_or_create_by(title: title)
     end
 end
