@@ -20,9 +20,18 @@ class QuotesController < ApplicationController
     end
   end
 
+  def update
+    quote = Quote.find_by(id: params[:id])
+    params = Quote.convert_association_strings(quote_params)
+    if quote.update_attributes(params)
+      render json: quote.to_json
+    else
+      render json: { error: quote.errors  }, status: :unprocessable_entity
+    end
+  end
+
   def random
     quote = Quote.order('RANDOM()').limit(1).first
-    # byebug
     render json: quote.to_json
   end
 

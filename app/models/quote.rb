@@ -9,8 +9,7 @@ class Quote < ApplicationRecord
   after_initialize :ensure_topic
 
   def initialize(args)
-    create_category(args)
-    create_topic(args)
+    Quote.convert_association_strings(args)
     super(args)
   end
 
@@ -28,6 +27,12 @@ class Quote < ApplicationRecord
     }
   end
 
+  def self.convert_association_strings(args)
+    self.create_category(args)
+    self.create_topic(args)
+    args
+  end
+
   private
 
     def ensure_topic
@@ -36,7 +41,7 @@ class Quote < ApplicationRecord
       end
     end
 
-    def create_topic(args)
+    def self.create_topic(args)
       if !args[:topic]
         return args[:topic] = Topic.uncategorizedTopic
       end
@@ -47,7 +52,7 @@ class Quote < ApplicationRecord
       args[:topic] = new_topic
     end
 
-    def create_category(args)
+    def self.create_category(args)
       if !args[:category]
         return args[:category] = Category.uncategorizedCategory
       end
