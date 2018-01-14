@@ -41,7 +41,7 @@ module Quotes
         origins ENV['ALLOWED_ORIGINS']
         resource '*',
           headers: :any,
-          methods: [:get, :post, :options]
+          methods: [:get, :post, :options, :put]
       end
     end
   end
