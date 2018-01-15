@@ -1,6 +1,7 @@
 class QuotesController < ApplicationController
   respond_to :json
   before_action :ensure_create_params, only: [:create, :update]
+  before_action :authorize_allowed_origins, only: [:create, :update]
   before_action :authenticate_secret_key, only: [:create, :update]
 
   def show
@@ -52,9 +53,22 @@ class QuotesController < ApplicationController
       quote_params.require([:category, :topic])
     end
 
+    def render_unauthorized
+      render json: { error: 'You are not authorized'  }, status: :unauthorized
+    end
+
+    def authorize_allowed_origins
+      return if ENV['ALLOWED_ORIGINS'] == '*'
+
+      origins = ENV['ALLOWED_ORIGINS'].split(', ')
+      origins.each { |origin| return if request.origin.match?(origin) }
+
+      render_unauthorized
+    end
+
     def authenticate_secret_key
       if params[:secretKey] != ENV['SECRET_KEY']
-        render json: { error: 'You are not authorized'  }, status: :unauthorized
+        render_unauthorized
       end
     end
 end
