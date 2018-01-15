@@ -1,6 +1,7 @@
 class QuotesController < ApplicationController
   respond_to :json
-  before_action :ensure_create_params, only: :create
+  before_action :ensure_create_params, only: [:create, :update]
+  before_action :authenticate_secret_key, only: [:create, :update]
 
   def show
     quote = Quote.find_by(id: params[:id])
@@ -49,5 +50,11 @@ class QuotesController < ApplicationController
 
     def ensure_create_params
       quote_params.require([:category, :topic])
+    end
+
+    def authenticate_secret_key
+      if params[:secretKey] != ENV['SECRET_KEY']
+        render json: { error: 'You are not authorized'  }, status: :unauthorized
+      end
     end
 end
