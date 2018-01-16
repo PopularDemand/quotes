@@ -1,0 +1,157 @@
+swagger: '2.0'
+info:
+  description: This API will return famous positive quotations.
+  version: 1.0.0
+  title: Positive Quotes API
+  contact:
+    email: alexa.anderson@outlook.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+host: positive-quotes.herokuapp.com
+basePath: /v1
+schemes:
+  - http
+paths:
+  /quotes:
+    post:
+      tags:
+        - quote
+      summary: Add a new quote
+      operationId: addQuote
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/Quote'
+        '401':
+          description: Not authorized
+          schema:
+            $ref: '#/definitions/Unauthorized'
+  '/quotes/{quoteId}':
+    get:
+      tags:
+        - quote
+      summary: Finds quote by id
+      operationId: findQuoteById
+      produces:
+        - application/json
+      parameters:
+        - name: quoteId
+          in: path
+          description: ID of quote to return
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/Quote'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Unauthorized'
+    put:
+      tags:
+        - quote
+      summary: Updates quote by id
+      operationId: updateQuoteById
+      produces:
+        - application/json
+      parameters:
+        - name: quoteId
+          in: path
+          description: ID of quote to update
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/Quote'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Unauthorized'
+  /quote/random:
+    get:
+      tags:
+        - quote
+      summary: Finds quote by id
+      operationId: findRandomQuote
+      produces:
+        - application/json
+      parameters:
+        - name: quoteId
+          in: path
+          description: ID of quote to return
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/Quote'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Unauthorized'
+definitions:
+  Quote:
+    type: object
+    required:
+      - category
+      - topic
+      - content
+      - attribution
+    properties:
+      id:
+        type: integer
+        format: int64
+      category:
+        $ref: '#/definitions/QuoteCategory'
+      topic:
+        $ref: '#/definitions/QuoteTopic'
+      content:
+        type: string
+        example: To infinity and beyond!
+      attribution:
+        type: string
+        example: Buzz Lightyear
+  Category:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      title:
+        type: string
+        example: ambition
+  Topic:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      title:
+        type: string
+        example: aim high
+  QuoteCategory:
+    type: string
+    example: ambition
+  QuoteTopic:
+    type: string
+    example: aim high
+  Unauthorized:
+    type: object
+    properties:
+      errors:
+        type: string
+        example: You are not authorized
