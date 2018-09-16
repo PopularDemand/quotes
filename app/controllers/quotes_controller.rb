@@ -4,6 +4,11 @@ class QuotesController < ApplicationController
   before_action :authorize_allowed_origins, only: [:create, :update]
   before_action :authenticate_secret_key, only: [:create, :update]
 
+  def index
+    quotes = Quote.all
+    render json: quotes.as_json
+  end
+
   def show
     quote = Quote.find_by(id: params[:id])
     if quote
